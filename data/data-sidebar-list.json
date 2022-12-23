@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "content": "Ajouter un dessin",
+      "action": "get-form-add-draw"
+    },
+    {
+      "content": "Afficher tableau",
+      "action": "get-table-draw"
+    },
+    {
+      "content": "Afficher mosaique",
+      "action": "get-draws-view"
+    }
+  ]
+}
