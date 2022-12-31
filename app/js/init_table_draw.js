@@ -1,7 +1,8 @@
 import { fetchGetTableDraw, fetchDelete, fetchGetDraw } from './fetch_data.js';
+import { PATH } from "../configUrl.js";
 
 const ressource = {
-    pathUpload:  'http://localhost/projet_web/api-starter/uploads/',
+    pathUpload:  PATH.urlUploadImg,
     sizeSmall:  'small'
 }
 
@@ -10,18 +11,20 @@ const storeDraw = {
     drawId: 0,
     drawItem: {}
 }
-
-// 'http://localhost/projet_web/api-starter/api-back/index.php'
+const gridjs = new window.gridjs.Grid()
 
 function createTableDraw() {
-    fetchGetTableDraw("http://localhost/projet_web/api-starter/api-back/index.php").then((json) => {
+    fetchGetTableDraw(PATH.urlApi).then((json) => {
         storeDraw.drawList = []
         storeDraw.drawId = 0,
         storeDraw.drawItem = {}
         storeDraw.drawList = json.data
-        console.log(storeDraw.drawList)
 
-        const gridjs = new window.gridjs.Grid({
+        if (json.data == undefined) {
+            return
+        }
+
+        gridjs.updateConfig({
             // columns: ['id', 'drawing_name', 'drawing_title', 'id_drawing_category', 'img'],
             columns: [
                 'id',
@@ -33,7 +36,7 @@ function createTableDraw() {
                   data: null,
                     formatter: (_, row) => window.gridjs.html(`
                         <img 
-                            src="${ressource.pathUpload+'small/'+(row.cells[1].data)+'.png'}" 
+                            src="${ressource.pathUpload+'small/'+(row.cells[1].data)}" 
                             alt="img" style="width:32px;max-width:100%;height:auto;" />`)
                 },
                 { 
@@ -43,7 +46,6 @@ function createTableDraw() {
                         className: 'py-2 mb-4 px-4 border rounded-md text-white bg-blue-600',
                         // onClick: () => alert(`Editing "${row.cells[0].data}" "${row.cells[1].data}"`)
                         onClick: () => {
-                            // viewEditDraw(row.cells[0].data)
                             let item = {
                                 id: row.cells[0].data,
                                 name: row.cells[1].data
@@ -68,7 +70,48 @@ function createTableDraw() {
                 
     })
 
-    console.log(gridjs)
+    // console.log(gridjs)
+}
+function renderTableDraw(grid, data) {
+    grid.updateConfig({
+        // columns: ['id', 'drawing_name', 'drawing_title', 'id_drawing_category', 'img'],
+        columns: [
+            'id',
+            'drawing_name',
+            'drawing_title',
+            'id_drawing_category',
+            { 
+              name: 'image',
+              data: null,
+                formatter: (_, row) => window.gridjs.html(`
+                    <img 
+                        src="${ressource.pathUpload+'small/'+(row.cells[1].data)}" 
+                        alt="img" style="width:32px;max-width:100%;height:auto;" />`)
+            },
+            { 
+                name: 'Actions',
+                formatter: (cell, row) => {
+                  return window.gridjs.h('button', {
+                    className: 'py-2 mb-4 px-4 border rounded-md text-white bg-blue-600',
+                    // onClick: () => alert(`Editing "${row.cells[0].data}" "${row.cells[1].data}"`)
+                    onClick: () => {
+                        let item = {
+                            id: row.cells[0].data,
+                            name: row.cells[1].data
+                        }
+                        deleteDraw(item)
+
+                    }
+                  }, 'Delete');
+                }
+              },
+         ],
+        data: data,
+        sort: true,
+        search: true,
+        pagination: true,
+      }).forceRender();
+
 }
 
 function deleteDraw(item) {
@@ -76,82 +119,47 @@ function deleteDraw(item) {
         id: item.id,
         name: item.name
     }
-    console.log(params)
-    fetchDelete("http://localhost/projet_web/api-starter/api-back/index.php", params).then((json) => {
-
-        if (json.success) {
-            console.log('succes')
-
-        }
+    fetchDelete(PATH.urlApi, params).then((json) => {
+ 
+        storeDraw.drawList = storeDraw.drawList.filter(elt =>  elt.id != item.id )
+        renderTableDraw(gridjs, storeDraw.drawList)
+  
     })
 }
 
-// function viewEditDraw(id) {
+// function switchAction(action) {
 
-//     // console.log('id')
-//     // console.log(id)
-//     let params = {"id":[id]}
-//     fetchGetDraw("http://localhost/projet_web/api-starter/api-back/index.php", params).then((json) => {
-//         let item = json.data[0]
+//     switch (action) {
+//         case "delete":  
 
-//         let htmlTop = `<h5>Editer</h5>`
-//         let htmlMiddle = `<div>
-//                             <div data-item-id="${item.id}">id : ${item.id}</div>
-//                             <div>name : ${item.drawing_name}</div>
-//                         </div>`
-//         let htmlBbot = `<div>
-//                 <button class="btn btn-sm btn-danger" data-modal-controller="drawAdmin" data-modal-action="deleteDraw">delete</button>
-//             </div>`
+//             let params = {
+//                 id: storeDraw.drawItem[0].id,
+//                 name: storeDraw.drawItem[0].drawing_name
+//             }
+//             console.log(params)
+//             fetchDelete(PATH.urlApi, params).then((json) => {
 
-//         componentsModal({
-//             target: "[data-dock-main-id='dock-main']",
-//             id: Date.now(),
-//             top: htmlTop,
-//             middle: htmlMiddle,
-//             bot: htmlBbot,
-//         })
-    
-//         let html = ''
-    
-//         return html
-//     })
+//                 if (json.success) {
 
+//                     storeDraw.drawList = storeDraw.drawList.filter(elt => elt.id != storeDraw.drawId)
+//                     storeDraw.drawItem = []
+//                     storeDraw.drawId = 0
+//                     // console.log(storeDraw)
+//                     createTableDraw()
+//                 }
+//             })
+//             break;
+//         case "aa":
+//             // htmlTemplate = `<div id="table-get-draw" data-form-wrap-name="table-get-draw" dock-main-template="table-get-draw"></div>`
+//             // createTemplate(htmlTemplate)
+//             break;
+//         case "aaa":
+//             // htmlTemplate = `<div id="table-get-draw" data-form-wrap-name="table-get-draw" dock-main-template="table-get-draw"></div>`
+//             // createTemplate()
+//             break;
+//         default:
+//             break;
+//     }
 // }
-
-function switchAction(action) {
-
-    switch (action) {
-        case "delete":  
-
-            let params = {
-                id: storeDraw.drawItem[0].id,
-                name: storeDraw.drawItem[0].drawing_name
-            }
-            console.log(params)
-            fetchDelete("http://localhost/projet_web/api-starter/api-back/index.php", params).then((json) => {
-
-                if (json.success) {
-                    // console.log(document.querySelector('[data-draw-row-id="'+storeDraw.drawId+'"]'))
-                    // document.querySelector('tr[data-draw-row-id="'+storeDraw.drawItem[0].id+'"]').removeChild();
-                    storeDraw.drawList = storeDraw.drawList.filter(elt => elt.id != storeDraw.drawId)
-                    storeDraw.drawItem = []
-                    storeDraw.drawId = 0
-                    // console.log(storeDraw)
-                    createTableDraw()
-                }
-            })
-            break;
-        case "aa":
-            // htmlTemplate = `<div id="table-get-draw" data-form-wrap-name="table-get-draw" dock-main-template="table-get-draw"></div>`
-            // createTemplate(htmlTemplate)
-            break;
-        case "aaa":
-            // htmlTemplate = `<div id="table-get-draw" data-form-wrap-name="table-get-draw" dock-main-template="table-get-draw"></div>`
-            // createTemplate()
-            break;
-        default:
-            break;
-    }
-}
 
 export { createTableDraw };

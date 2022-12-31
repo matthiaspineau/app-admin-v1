@@ -1,3 +1,5 @@
+import { PATH } from "../configUrl.js";
+
 function switchModalAction(idModal, controller, action) {
 
     switch (controller) {
@@ -10,7 +12,7 @@ function switchModalAction(idModal, controller, action) {
                         id: document.querySelector('[data-modal-id="'+idModal+'"] [data-item-id]').dataset.itemId
                     }
                     console.log(params)
-                    fetchDelete("http://localhost/projet_web/api-starter/api-back/index.php", params).then((json) => {
+                    fetchDelete(PATH.urlApi, params).then((json) => {
         
                         if (json.success) {
                             console.log('succes')
@@ -19,9 +21,6 @@ function switchModalAction(idModal, controller, action) {
                     })
                     break;
                 case "aa":
-                    
-                    break;
-                case "aaa":
                     
                     break;
                 default:

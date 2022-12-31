@@ -53,22 +53,22 @@
     },
     "lists": [
       {
-        "label": "a",
+        "label": "crayon",
         "type": "checkbox",
-        "name": "a",
-        "value": "a"
+        "name": "crayon",
+        "value": "crayon"
       },
       {
-        "label": "b",
+        "label": "aquarel",
         "type": "checkbox",
-        "name": "b",
-        "value": "b"
+        "name": "aquarel",
+        "value": "aquarel"
       },
       {
-        "label": "c",
+        "label": "brouillon",
         "type": "checkbox",
-        "name": "c",
-        "value": "c"
+        "name": "brouillon",
+        "value": "brouillon"
       }
     ]
   },

@@ -22,8 +22,6 @@ async function fetchDataSidebarItems(url) {
 
 async function fetchGetTableDraw(url, params) {
 
-    // let params = {"id":['98', '99']}
-    // let params = {"id":['98', '99']}
     let data = {
        "controller": "DrawingController",
        "action": "getDraw",
